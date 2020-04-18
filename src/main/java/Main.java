@@ -46,7 +46,7 @@ public class Main {
             nextTurn(turnType);
             turnType = 1 - turnType;
             printMap();
-        } while ((hasWinner(NUMBER_TO_WIN, DOT_EMPTY) == -1) && hasEmptyCell());
+        } while ((!hasWinner(NUMBER_TO_WIN, DOT_EMPTY)) && hasEmptyCell());
         if (!hasEmptyCell()){
             System.out.println("It's a draw");
         }
@@ -143,7 +143,7 @@ public class Main {
 
     public static void turnComputer(int turnOrder){
         int x, y;
-        int winStrategy;
+        boolean winStrategy;
         boolean needStop = false;
         if ((humanTurnOrder == 1) && (gameMap[0][0] == DOT_EMPTY)){
             gameMap[0][0] = DOTS[1 - humanTurnOrder];
@@ -152,7 +152,7 @@ public class Main {
         if (!needStop) {
             // check, could computer win
             winStrategy = hasWinner(NUMBER_TO_WIN - 1, DOTS[1 - humanTurnOrder]);
-            if (winStrategy != -1) {
+            if (winStrategy) {
                 for (int i = 0; i < NUMBER_ROW; i++) {
                     if (needStop) {
                         break;
@@ -160,7 +160,7 @@ public class Main {
                     for (int j = 0; j < NUMBER_COL; j++) {
                         if (gameMap[i][j] == DOT_EMPTY) {
                             gameMap[i][j] = DOTS[1 - humanTurnOrder];
-                            if (hasWinner(NUMBER_TO_WIN, DOTS[1 - humanTurnOrder]) == -1) {
+                            if (!hasWinner(NUMBER_TO_WIN, DOTS[1 - humanTurnOrder])) {
                                 gameMap[i][j] = DOT_EMPTY;
                             } else {
                                 needStop = true;
@@ -174,7 +174,7 @@ public class Main {
         if (!needStop) {
             // check, could human win
             winStrategy = hasWinner(NUMBER_TO_WIN - 1, DOTS[humanTurnOrder]);
-            if (winStrategy != -1) {
+            if (winStrategy) {
                 for (int i = 0; i < NUMBER_ROW; i++) {
                     if (needStop) {
                         break;
@@ -182,7 +182,7 @@ public class Main {
                     for (int j = 0; j < NUMBER_COL; j++) {
                         if (gameMap[i][j] == DOT_EMPTY) {
                             gameMap[i][j] = DOTS[humanTurnOrder];
-                            if (hasWinner(NUMBER_TO_WIN, DOTS[humanTurnOrder]) == -1) {
+                            if (!hasWinner(NUMBER_TO_WIN, DOTS[humanTurnOrder])) {
                                 gameMap[i][j] = DOT_EMPTY;
                             } else {
                                 gameMap[i][j] = DOTS[1 - humanTurnOrder];
@@ -239,14 +239,14 @@ public class Main {
         return canCheck;
     }
 
-    public static int hasWinner(int checkCellsCount, char checkDot){
+    public static boolean hasWinner(int checkCellsCount, char checkDot){
         char curCell;
         boolean[] winDirection = new boolean[8];
-        int winnerSide = -1;
+        boolean hasWinner = false;
 
         // for every cell
         for (int row = 0; row < NUMBER_ROW; row++) {
-            if (winnerSide != -1){
+            if (hasWinner){
                 break;
             }
             for (int col = 0; col < NUMBER_COL; col++) {
@@ -256,7 +256,7 @@ public class Main {
                         break;
                     }
                 }
-                if (winnerSide != -1){
+                if (hasWinner){
                     break;
                 }
                 if (gameMap[row][col] != DOT_EMPTY){
@@ -277,13 +277,11 @@ public class Main {
                         }
                     }
                     for (int x = 0; x < CHECK_SIDE_COUNT; x++){
-                        if (winDirection[x]){
-                            winnerSide = x;
-                        }
+                        hasWinner |= winDirection[x];
                     }
                 }
             }
         }
-        return winnerSide;
+        return hasWinner;
     }
 }
